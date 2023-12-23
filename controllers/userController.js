@@ -14,6 +14,11 @@ exports.registerUser = [
 
     catchAsyncError(async (req, res, next) => {
 
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new ErrorHandler('Validation error', 422, errors.array()));
+        }
+
         const { name, email, password } = req.body;
 
         const user = await User.create({
@@ -29,6 +34,11 @@ exports.loginUser = [
     body('email').isEmail().normalizeEmail(),
     body('password').isLength({ min: 5 }).trim().escape(),
     catchAsyncError(async (req, res, next) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new ErrorHandler('Validation error', 422, errors.array()));
+        }
 
         const { email, password } = req.body;
 
